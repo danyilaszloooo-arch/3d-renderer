@@ -11,14 +11,16 @@ import { camera3D, vector3D, point3D, vector2D } from '../../interfaces';
 export class Canvas {
   canvasService = inject(CanvasService)
   scenes = inject(Scenes)
+  focalLength = this.canvasService.focalLength
+  drawCenterLines: boolean = true
+  cameraPositionSensitivity: number = 0.01
 
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
   ctx!: CanvasRenderingContext2D
 
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('2d')!
-    this.drawLine(this.canvasService.width / 2, 0, this.canvasService.width / 2, this.canvasService.height, 0.5, 'white', 'square')
-    this.drawLine(0, this.canvasService.height / 2, this.canvasService.width, this.canvasService.height / 2, 0.5, 'white', 'square')
+    this.drawScene()
   }
 
   public drawPoint(x: number, y: number, size: number = 1, color: string = 'black'): void {
@@ -42,7 +44,29 @@ export class Canvas {
     this.ctx.closePath()
   }
 
-  public drawScene(camera: camera3D = this.scenes.camera): void {
+  public changeFocalLength(value: number): void {
+    this.focalLength.set(value)
+    this.drawScene()
+  }
+
+  public toggleLines(value: boolean): void {
+    this.drawCenterLines = value
+    this.drawScene()
+  }
+
+  public changeCameraPosition(x: number, y: number, z: number): void {
+    this.scenes.camera().pos.x = x * this.cameraPositionSensitivity
+    this.scenes.camera().pos.y = y * this.cameraPositionSensitivity
+    this.scenes.camera().pos.z = z * this.cameraPositionSensitivity
+    this.drawScene()
+  }
+ 
+  public drawScene(camera: camera3D = this.scenes.camera()): void {
+    this.ctx.clearRect(0, 0, this.canvasService.width, this.canvasService.height)
+    if (this.drawCenterLines) {
+      this.drawLine(this.canvasService.width / 2, 0, this.canvasService.width / 2, this.canvasService.height, 0.5, 'white', 'square')
+      this.drawLine(0, this.canvasService.height / 2, this.canvasService.width, this.canvasService.height / 2, 0.5, 'white', 'square')
+    }
     this.scenes.points.forEach(point => {
       let relativePos = this.getRelativePosition3D(point, camera)
       if (relativePos.z > 0) {
@@ -54,15 +78,15 @@ export class Canvas {
   }
 
   private getRelativePosition3D(element1: point3D, element2: point3D): vector3D {
-    let xRel: number = element1.pos.x = element2.pos.x
-    let yRel: number = element1.pos.y = element2.pos.y
-    let zRel: number = element1.pos.z = element2.pos.z
+    let xRel: number = element1.pos.x - element2.pos.x
+    let yRel: number = element1.pos.y - element2.pos.y
+    let zRel: number = element1.pos.z - element2.pos.z
     let relativePos: vector3D = {x: xRel, y: yRel, z: zRel}
     return relativePos
   }
 
   private getProjectedPosition2D(relativePos: vector3D): vector2D {
-    let focalLength: number = this.canvasService.focalLength
+    let focalLength: number = this.focalLength()
     let offsetX: number = (focalLength * relativePos.x) / relativePos.z
     let offsetY: number = (focalLength * relativePos.y) / relativePos.z
     let offset2D: vector2D = {x: offsetX, y: offsetY}

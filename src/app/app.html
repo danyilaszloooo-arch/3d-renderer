@@ -1,4 +1,25 @@
 <div class="w-full h-screen bg-black flex flex-col justify-center items-center gap-2">
-  <button class="bg-green-500 text-white font-bold border-0 rounded-lg p-3 cursor-pointer hover:bg-green-700 active:bg-green-900" (click)="canvas.drawScene()">Render</button>
+  <div class="w-fit h-fit flex flex-row justify-center items-center gap-4 bg-gray-900 border-2 border-solid border-gray-800 p-3 rounded-lg ">
+    <div class="w-fit h-fit flex flex-col justify-center items-center">
+      <p class="text-xs text-gray-500">focalLength</p>
+      <input #fl type="range" min="0" max="2000" value="500" (input)="canvas.changeFocalLength(fl.valueAsNumber)">
+    </div>
+    <div class="w-fit h-fit flex flex-row justify-center items-center">
+      <p class="text-xs text-gray-500">drawCenterLines: </p>
+      <input #lines type="checkbox" checked (input)="canvas.toggleLines(lines.checked)">
+    </div>
+    <div class="w-fit h-fit flex flex-col justify-center items-center">
+      <p class="text-xs text-gray-500"></p>
+      <input #camX type="range" min="-1000" max="1000" value="0" (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber)">
+    </div>
+    <div class="w-fit h-fit flex flex-col justify-center items-center">
+      <p class="text-xs text-gray-500"></p>
+      <input #camY type="range" min="-1000" max="1000" value="0" (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber)">
+    </div>
+    <div class="w-fit h-fit flex flex-col justify-center items-center">
+      <p class="text-xs text-gray-500"></p>
+      <input #camZ type="range" min="-1000" max="1000" value="0" (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber)">
+    </div>
+  </div>
   <app-canvas #canvas />
 </div>
