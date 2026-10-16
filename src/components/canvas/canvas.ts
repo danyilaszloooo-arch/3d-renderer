@@ -68,7 +68,7 @@ export class Canvas {
       this.drawLine(0, this.canvasService.height / 2, this.canvasService.width, this.canvasService.height / 2, 0.5, 'white', 'square')
     }
     this.scenes.points.forEach(point => {
-      let relativePos = this.getRelativePosition3D(point, camera)
+      let relativePos = this.getRelativePosition3D(point.pos, camera.pos)
       if (relativePos.z > 0) {
         let projectedPos: vector2D = this.getProjectedPosition2D(relativePos)
         let renderedPos: vector2D = this.getRenderedPosition2D(projectedPos)
@@ -77,10 +77,10 @@ export class Canvas {
     });
   }
 
-  private getRelativePosition3D(element1: point3D, element2: point3D): vector3D {
-    let xRel: number = element1.pos.x - element2.pos.x
-    let yRel: number = element1.pos.y - element2.pos.y
-    let zRel: number = element1.pos.z - element2.pos.z
+  private getRelativePosition3D(position1: vector3D, position2: vector3D): vector3D {
+    let xRel: number = position1.x - position2.x
+    let yRel: number = position1.y - position2.y
+    let zRel: number = position1.z - position2.z
     let relativePos: vector3D = {x: xRel, y: yRel, z: zRel}
     return relativePos
   }
