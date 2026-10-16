@@ -1,7 +1,8 @@
+import { line2D } from './../../interfaces';
 import { Component, ElementRef, inject, viewChild, } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
-import { camera3D, vector3D, point3D, vector2D } from '../../interfaces';
+import { camera3D, vector3D, point3D, vector2D, line3D } from '../../interfaces';
 
 @Component({
   selector: 'app-canvas',
@@ -14,7 +15,8 @@ export class Canvas {
   focalLength = this.canvasService.focalLength
   drawCenterLines: boolean = true
   cameraPositionSensitivity: number = 0.01
-  cameraRotationSensitivity: number = 0.01
+  cameraRotationSensitivity: number = 0.001
+  planeZ: number = 0.1
 
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
   ctx!: CanvasRenderingContext2D
@@ -82,9 +84,10 @@ export class Canvas {
     this.scenes.lines.forEach(line => {
       let relativeStart: vector3D = this.getRelativePosition3D(line.start, camera.pos, camera)
       let relativeEnd: vector3D = this.getRelativePosition3D(line.end, camera.pos, camera)
-      if (relativeStart.z > 0 || relativeEnd.z > 0) {
-        let projectedStart: vector2D = this.getProjectedPosition2D(relativeStart)
-        let projectedEnd: vector2D = this.getProjectedPosition2D(relativeEnd)
+      let relativeLine: line3D | number = this.cutLineAtEdge({start: relativeStart, end: relativeEnd}, this.planeZ)
+      if (typeof relativeLine !== 'number') {
+        let projectedStart: vector2D = this.getProjectedPosition2D(relativeLine.start)
+        let projectedEnd: vector2D = this.getProjectedPosition2D(relativeLine.end)
         let renderedStart: vector2D = this.getRenderedPosition2D(projectedStart)
         let renderedEnd: vector2D = this.getRenderedPosition2D(projectedEnd)
         this.drawLine(renderedStart.x, renderedStart.y, renderedEnd.x, renderedEnd.y, 10, 'white')
@@ -131,5 +134,41 @@ export class Canvas {
     let renderedY: number = canvasCenter.y - projectedPos.y
     let renderedPos: vector2D = {x: renderedX, y: renderedY}
     return renderedPos
+  }
+
+  private cutLineAtEdge(line: line3D, planeZ: number): line3D | number {
+    if (line.start.z > planeZ && line.end.z > planeZ) {
+      console.log('Mindkét pont előtted van.')
+
+      return line
+
+    } else if (line.start.z <= planeZ && line.end.z <= planeZ) {
+      console.log('Mindkét pont mögötted van.');
+      
+
+      return 0
+
+    } else {
+
+      let intersectionPoint = this.getIntersectionPoint(line, planeZ)
+      if (line.start.z > planeZ) {
+        return {start: line.start, end: intersectionPoint}
+      } else {
+        return {start: intersectionPoint, end: line.end}
+      }
+    }
+  }
+
+  private getIntersectionPoint(line: line3D, planeZ: number): vector3D {
+   const Ax: number = line.start.x
+   const Ay: number = line.start.y
+   const Az: number = line.start.z
+   const Bx: number = line.end.x
+   const By: number = line.end.y
+   const Bz: number = line.end.z
+   const t: number = (planeZ - Az) / (Bz - Az)
+   const Cx: number = Ax + (Bx - Ax) * t
+   const Cy: number = Ay + (By - Ay) * t
+   return {x: Cx, y: Cy, z: planeZ}
   }
 }
