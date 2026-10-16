@@ -14,6 +14,7 @@ export class Canvas {
   focalLength = this.canvasService.focalLength
   drawCenterLines: boolean = true
   cameraPositionSensitivity: number = 0.01
+  cameraRotationSensitivity: number = 0.01
 
   canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
   ctx!: CanvasRenderingContext2D
@@ -54,10 +55,13 @@ export class Canvas {
     this.drawScene()
   }
 
-  public changeCameraPosition(x: number, y: number, z: number): void {
+  public changeCameraPosition(x: number, y: number, z: number, yaw: number, pitch: number, roll: number): void {
     this.scenes.camera().pos.x = x * this.cameraPositionSensitivity
     this.scenes.camera().pos.y = y * this.cameraPositionSensitivity
     this.scenes.camera().pos.z = z * this.cameraPositionSensitivity
+    this.scenes.camera().rotation.yaw = yaw * this.cameraRotationSensitivity
+    this.scenes.camera().rotation.pitch = pitch * this.cameraRotationSensitivity
+    this.scenes.camera().rotation.roll = roll * this.cameraRotationSensitivity
     this.drawScene()
   }
  
@@ -68,20 +72,48 @@ export class Canvas {
       this.drawLine(0, this.canvasService.height / 2, this.canvasService.width, this.canvasService.height / 2, 0.5, 'white', 'square')
     }
     this.scenes.points.forEach(point => {
-      let relativePos = this.getRelativePosition3D(point.pos, camera.pos)
+      let relativePos: vector3D = this.getRelativePosition3D(point.pos, camera.pos, camera)
       if (relativePos.z > 0) {
         let projectedPos: vector2D = this.getProjectedPosition2D(relativePos)
         let renderedPos: vector2D = this.getRenderedPosition2D(projectedPos)
         this.drawPoint(renderedPos.x, renderedPos.y, 10, 'white')
       }
     });
+    this.scenes.lines.forEach(line => {
+      let relativeStart: vector3D = this.getRelativePosition3D(line.start, camera.pos, camera)
+      let relativeEnd: vector3D = this.getRelativePosition3D(line.end, camera.pos, camera)
+      if (relativeStart.z > 0 || relativeEnd.z > 0) {
+        let projectedStart: vector2D = this.getProjectedPosition2D(relativeStart)
+        let projectedEnd: vector2D = this.getProjectedPosition2D(relativeEnd)
+        let renderedStart: vector2D = this.getRenderedPosition2D(projectedStart)
+        let renderedEnd: vector2D = this.getRenderedPosition2D(projectedEnd)
+        this.drawLine(renderedStart.x, renderedStart.y, renderedEnd.x, renderedEnd.y, 10, 'white')
+      }
+    })
   }
 
-  private getRelativePosition3D(position1: vector3D, position2: vector3D): vector3D {
-    let xRel: number = position1.x - position2.x
-    let yRel: number = position1.y - position2.y
-    let zRel: number = position1.z - position2.z
-    let relativePos: vector3D = {x: xRel, y: yRel, z: zRel}
+  private getRelativePosition3D(position1: vector3D, position2: vector3D, camera: camera3D): vector3D {
+    let x: number = position1.x - position2.x
+    let y: number = position1.y - position2.y
+    let z: number = position1.z - position2.z
+
+    let yaw = camera.rotation.yaw
+    let pitch = camera.rotation.pitch
+    let roll = camera.rotation.roll
+
+    let x1 = x * Math.cos(yaw) - z * Math.sin(yaw)
+    let z1 = x * Math.sin(yaw) + z * Math.cos(yaw)
+    let y1 = y
+
+    let y2 = y1 * Math.cos(pitch) + z1 * Math.sin(pitch)
+    let z2 = -y1 * Math.sin(pitch) + z1 * Math.cos(pitch)
+    let x2 = x1
+
+    let x3 = x2 * Math.cos(roll) + y2 * Math.sin(roll)
+    let y3 = -x2 * Math.sin(roll) + y2 * Math.cos(roll)
+    let z3 = z2
+
+    let relativePos: vector3D = {x: x3, y: y3, z: z3}
     return relativePos
   }
 
@@ -96,7 +128,7 @@ export class Canvas {
   private getRenderedPosition2D(projectedPos: vector2D): vector2D {
     let canvasCenter: vector2D = this.canvasService.canvasCenter
     let renderedX: number = canvasCenter.x + projectedPos.x
-    let renderedY: number = canvasCenter.y + projectedPos.y
+    let renderedY: number = canvasCenter.y - projectedPos.y
     let renderedPos: vector2D = {x: renderedX, y: renderedY}
     return renderedPos
   }

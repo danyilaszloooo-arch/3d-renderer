@@ -2,6 +2,12 @@ export interface point3D {
     pos: vector3D
 }
 
+export interface rotation3D {
+    yaw: number
+    pitch: number
+    roll: number
+}
+
 export interface line3D {
     start: vector3D
     end: vector3D
@@ -16,6 +22,7 @@ export interface vector3D {
 export interface camera3D {
     pos: vector3D
     focalLength: number
+    rotation: rotation3D
 }
 
 export interface point2D {
