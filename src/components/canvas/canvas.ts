@@ -138,18 +138,10 @@ export class Canvas {
 
   private cutLineAtEdge(line: line3D, planeZ: number): line3D | number {
     if (line.start.z > planeZ && line.end.z > planeZ) {
-      console.log('Mindkét pont előtted van.')
-
       return line
-
-    } else if (line.start.z <= planeZ && line.end.z <= planeZ) {
-      console.log('Mindkét pont mögötted van.');
-      
-
+    } else if (line.start.z <= planeZ && line.end.z <= planeZ) {      
       return 0
-
     } else {
-
       let intersectionPoint = this.getIntersectionPoint(line, planeZ)
       if (line.start.z > planeZ) {
         return {start: line.start, end: intersectionPoint}

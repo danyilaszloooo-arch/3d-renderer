@@ -35,9 +35,9 @@ export class Scenes {
     {pos: {x: -2, y:  2, z: 4}}, {pos: {x: -2, y:  2, z: 5}}, {pos: {x: -2, y:  2, z: 6}},
     {pos: {x:  2, y:  2, z: 4}}, {pos: {x:  2, y:  2, z: 5}}, {pos: {x:  2, y:  2, z: 6}},
   ]
-  
+
   lines: line3D[] = [
-    {start: {x: 2, y: 1, z: 8}, end: {x: -3, y: -2, z: 11}}
+    {start: {x: -2, y: -2, z: 3}, end: {x: 2, y: 2, z: 7}}
   ]
 
   camera = signal<camera3D>({
