@@ -11,32 +11,32 @@
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraX</p>
       <input #camX type="range" min="-1000" max="1000" value="0"
-      (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber, camYaw.valueAsNumber, camPitch.valueAsNumber, camRoll.valueAsNumber)">
+      (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraY</p>
       <input #camY type="range" min="-1000" max="1000" value="0"
-      (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber, camYaw.valueAsNumber, camPitch.valueAsNumber, camRoll.valueAsNumber)">
+      (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraZ</p>
       <input #camZ type="range" min="-1000" max="1000" value="0"
-      (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber, camYaw.valueAsNumber, camPitch.valueAsNumber, camRoll.valueAsNumber)">
+      (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraYaw</p>
       <input #camYaw type="range" min="-1000" max="1000" value="0"
-      (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber, camYaw.valueAsNumber, camPitch.valueAsNumber, camRoll.valueAsNumber)">
+      (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraPitch</p>
       <input #camPitch type="range" min="-1000" max="1000" value="0"
-      (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber, camYaw.valueAsNumber, camPitch.valueAsNumber, camRoll.valueAsNumber)">
+      (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraRoll</p>
       <input #camRoll type="range" min="-1000" max="1000" value="0"
-      (input)="canvas.changeCameraPosition(camX.valueAsNumber, camY.valueAsNumber, camZ.valueAsNumber, camYaw.valueAsNumber, camPitch.valueAsNumber, camRoll.valueAsNumber)">
+      (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
     </div>
   </div>
   <app-canvas #canvas />

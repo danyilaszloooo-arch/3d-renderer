@@ -2,8 +2,7 @@ import { RenderService } from './../../services/render-service';
 import { Component, ElementRef, inject, viewChild, } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
-import { camera3D, vector3D, vector2D, line3D, point3D } from '../../interfaces';
-import { MathService } from '../../services/math-service';
+import { camera3D, rotation3D, vector3D } from '../../interfaces';
 import { InputService } from '../../services/input';
 import { DrawService } from '../../services/draw-service';
 
@@ -15,16 +14,13 @@ import { DrawService } from '../../services/draw-service';
 export class Canvas {
   protected canvasService = inject(CanvasService)
   private scenes = inject(Scenes)
-  private mathService = inject(MathService)
   private inputService = inject(InputService)
   private drawService = inject(DrawService)
   private renderService = inject(RenderService)
 
-  private focalLength = this.canvasService.focalLength
   private centerLines: boolean = false
-  private cameraPositionSensitivity: number = 0.01
-  private cameraRotationSensitivity: number = 0.001
-  private planeZ: number = 0.1
+  public cameraPositionSensitivity: number = 0.01
+  public cameraRotationSensitivity: number = 0.001
 
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
   private ctx!: CanvasRenderingContext2D
@@ -35,7 +31,7 @@ export class Canvas {
   }
 
   public changeFocalLength(value: number): void {
-    this.focalLength.set(value)
+    this.renderService.changeFocalLength(value)
     this.drawScene()
   }
 
@@ -44,24 +40,18 @@ export class Canvas {
     this.drawScene()
   }
 
-  public changeCameraPosition(x: number, y: number, z: number, yaw: number, pitch: number, roll: number): void {
-    this.scenes.camera().pos.x = x * this.cameraPositionSensitivity
-    this.scenes.camera().pos.y = y * this.cameraPositionSensitivity
-    this.scenes.camera().pos.z = z * this.cameraPositionSensitivity
-    this.scenes.camera().rotation.yaw = yaw * this.cameraRotationSensitivity
-    this.scenes.camera().rotation.pitch = pitch * this.cameraRotationSensitivity
-    this.scenes.camera().rotation.roll = roll * this.cameraRotationSensitivity
+  public changeCameraTransform(position: vector3D, rotation: rotation3D, sensitivity: number[]): void {
+    this.scenes.setCameraTransform(
+      {x: position.x * sensitivity[0], y: position.y * sensitivity[0], z: position.z * sensitivity[0]},
+      {yaw: rotation.yaw * sensitivity[1], pitch: rotation.pitch * sensitivity[1], roll: rotation.roll * sensitivity[1]}
+    )
     this.drawScene()
   }
  
   private drawScene(camera: camera3D = this.scenes.camera()): void {
     this.ctx.clearRect(0, 0, this.canvasService.width, this.canvasService.height)
-    this.scenes.points.forEach(point => {
-      this.renderService.renderPoint(this.ctx, point, camera, this.focalLength(), this.canvasService.canvasCenter)
-    });
-    this.scenes.lines.forEach(line => {
-      this.renderService.renderLine(this.ctx, line, camera, this.planeZ, this.focalLength(), this.canvasService.canvasCenter)
-    })
+    this.renderService.renderPoints(this.ctx)
+    this.renderService.renderLine(this.ctx)
     this.drawService.drawCenterLines(this.ctx, this.centerLines, this.canvasService.width, this.canvasService.height)
   }
 }

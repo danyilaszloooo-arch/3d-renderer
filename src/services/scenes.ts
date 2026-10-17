@@ -1,6 +1,5 @@
-import { rotation3D } from './../interfaces';
 import { Injectable, signal } from '@angular/core';
-import { camera3D, line3D, point3D, vector3D } from '../interfaces';
+import { camera3D, line3D, point3D, vector3D, rotation3D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -41,16 +40,22 @@ export class Scenes {
   ]
 
   camera = signal<camera3D>({
-  pos: {
-    x: 0,
-    y: 0,
-    z: 0
-  },
-  focalLength: 500,
-  rotation: {
-    yaw: 0,
-    pitch: 0,
-    roll: 0
+    pos: {
+      x: 0,
+      y: 0,
+      z: 0
+    },
+    focalLength: 500,
+    rotation: {
+      yaw: 0,
+      pitch: 0,
+      roll: 0
+    }
+  })
+
+  public setCameraTransform(position: vector3D, rotation: rotation3D) {
+    this.camera.update(camera => ({
+      ...camera, pos: position, rotation: rotation
+    }))
   }
-})
 }
