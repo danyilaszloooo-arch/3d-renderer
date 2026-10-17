@@ -82,58 +82,57 @@ export class Canvas {
       }
     });
     this.scenes.lines.forEach(line => {
-      let relativeStart: vector3D = this.getRelativePosition3D(line.start, camera.pos, camera)
-      let relativeEnd: vector3D = this.getRelativePosition3D(line.end, camera.pos, camera)
-      let relativeLine: line3D | number = this.cutLineAtEdge({start: relativeStart, end: relativeEnd}, this.planeZ)
+      const relativeStart: vector3D = this.getRelativePosition3D(line.start, camera.pos, camera)
+      const relativeEnd: vector3D = this.getRelativePosition3D(line.end, camera.pos, camera)
+      const relativeLine: line3D | number = this.cutLineAtEdge({start: relativeStart, end: relativeEnd}, this.planeZ)
       if (typeof relativeLine !== 'number') {
-        let projectedStart: vector2D = this.getProjectedPosition2D(relativeLine.start)
-        let projectedEnd: vector2D = this.getProjectedPosition2D(relativeLine.end)
-        let renderedStart: vector2D = this.getRenderedPosition2D(projectedStart)
-        let renderedEnd: vector2D = this.getRenderedPosition2D(projectedEnd)
+        const projectedStart: vector2D = this.getProjectedPosition2D(relativeLine.start)
+        const projectedEnd: vector2D = this.getProjectedPosition2D(relativeLine.end)
+        const renderedStart: vector2D = this.getRenderedPosition2D(projectedStart)
+        const renderedEnd: vector2D = this.getRenderedPosition2D(projectedEnd)
         this.drawLine(renderedStart.x, renderedStart.y, renderedEnd.x, renderedEnd.y, 10, 'white')
       }
     })
   }
 
   private getRelativePosition3D(position1: vector3D, position2: vector3D, camera: camera3D): vector3D {
-    let x: number = position1.x - position2.x
-    let y: number = position1.y - position2.y
-    let z: number = position1.z - position2.z
+    const x: number = position1.x - position2.x
+    const y: number = position1.y - position2.y
+    const z: number = position1.z - position2.z
 
-    let yaw = camera.rotation.yaw
-    let pitch = camera.rotation.pitch
-    let roll = camera.rotation.roll
+    const yaw = camera.rotation.yaw
+    const pitch = camera.rotation.pitch
+    const roll = camera.rotation.roll
 
-    let x1 = x * Math.cos(yaw) - z * Math.sin(yaw)
-    let z1 = x * Math.sin(yaw) + z * Math.cos(yaw)
-    let y1 = y
+    const x1 = x * Math.cos(yaw) - z * Math.sin(yaw)
+    const z1 = x * Math.sin(yaw) + z * Math.cos(yaw)
+    const y1 = y
 
-    let y2 = y1 * Math.cos(pitch) + z1 * Math.sin(pitch)
-    let z2 = -y1 * Math.sin(pitch) + z1 * Math.cos(pitch)
-    let x2 = x1
+    const y2 = y1 * Math.cos(pitch) + z1 * Math.sin(pitch)
+    const z2 = -y1 * Math.sin(pitch) + z1 * Math.cos(pitch)
+    const x2 = x1
 
-    let x3 = x2 * Math.cos(roll) + y2 * Math.sin(roll)
-    let y3 = -x2 * Math.sin(roll) + y2 * Math.cos(roll)
-    let z3 = z2
+    const x3 = x2 * Math.cos(roll) + y2 * Math.sin(roll)
+    const y3 = -x2 * Math.sin(roll) + y2 * Math.cos(roll)
+    const z3 = z2
 
-    let relativePos: vector3D = {x: x3, y: y3, z: z3}
-    return relativePos
+    return {x: x3, y: y3, z: z3}
   }
 
   private getProjectedPosition2D(relativePos: vector3D): vector2D {
-    let focalLength: number = this.focalLength()
-    let offsetX: number = (focalLength * relativePos.x) / relativePos.z
-    let offsetY: number = (focalLength * relativePos.y) / relativePos.z
-    let offset2D: vector2D = {x: offsetX, y: offsetY}
-    return offset2D
+    const focalLength: number = this.focalLength()
+    return {
+      x: (focalLength * relativePos.x) / relativePos.z,
+      y: (focalLength * relativePos.y) / relativePos.z
+    }
   }
 
   private getRenderedPosition2D(projectedPos: vector2D): vector2D {
-    let canvasCenter: vector2D = this.canvasService.canvasCenter
-    let renderedX: number = canvasCenter.x + projectedPos.x
-    let renderedY: number = canvasCenter.y - projectedPos.y
-    let renderedPos: vector2D = {x: renderedX, y: renderedY}
-    return renderedPos
+    const canvasCenter: vector2D = this.canvasService.canvasCenter
+    return {
+      x: canvasCenter.x + projectedPos.x,
+      y: canvasCenter.y - projectedPos.y
+    }
   }
 
   private cutLineAtEdge(line: line3D, planeZ: number): line3D | number {
@@ -142,7 +141,7 @@ export class Canvas {
     } else if (line.start.z <= planeZ && line.end.z <= planeZ) {      
       return 0
     } else {
-      let intersectionPoint = this.getIntersectionPoint(line, planeZ)
+      const intersectionPoint = this.getIntersectionPoint(line, planeZ)
       if (line.start.z > planeZ) {
         return {start: line.start, end: intersectionPoint}
       } else {
@@ -152,15 +151,10 @@ export class Canvas {
   }
 
   private getIntersectionPoint(line: line3D, planeZ: number): vector3D {
-   const Ax: number = line.start.x
-   const Ay: number = line.start.y
-   const Az: number = line.start.z
-   const Bx: number = line.end.x
-   const By: number = line.end.y
-   const Bz: number = line.end.z
-   const t: number = (planeZ - Az) / (Bz - Az)
-   const Cx: number = Ax + (Bx - Ax) * t
-   const Cy: number = Ay + (By - Ay) * t
-   return {x: Cx, y: Cy, z: planeZ}
+   const t: number = (planeZ - line.start.z) / (line.end.z - line.start.z)
+   return {
+    x: line.start.x + (line.end.x - line.start.x) * t,
+    y: line.start.y + (line.end.y - line.start.y) * t,
+    z: planeZ}
   }
 }
