@@ -6,7 +6,7 @@
     </div>
     <div class="w-fit h-fit flex flex-row justify-center items-center">
       <p class="text-xs text-gray-500">drawCenterLines: </p>
-      <input #lines type="checkbox" checked (input)="canvas.toggleLines(lines.checked)">
+      <input #lines type="checkbox" (input)="canvas.toggleLines(lines.checked)">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraX</p>

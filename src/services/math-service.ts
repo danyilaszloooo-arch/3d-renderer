@@ -12,7 +12,7 @@ export class MathService {
   
     const yaw = camera.rotation.yaw
     const pitch = -camera.rotation.pitch
-    const roll = camera.rotation.roll
+    const roll = -camera.rotation.roll
   
     const x1 = x * Math.cos(yaw) - z * Math.sin(yaw)
     const z1 = x * Math.sin(yaw) + z * Math.cos(yaw)
