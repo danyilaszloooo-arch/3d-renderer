@@ -3,6 +3,7 @@ import { Component, ElementRef, inject, viewChild, } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
 import { camera3D, vector3D, point3D, vector2D, line3D } from '../../interfaces';
+import { MathService } from '../../services/math-service';
 
 @Component({
   selector: 'app-canvas',
@@ -12,6 +13,8 @@ import { camera3D, vector3D, point3D, vector2D, line3D } from '../../interfaces'
 export class Canvas {
   canvasService = inject(CanvasService)
   scenes = inject(Scenes)
+  mathService = inject(MathService)
+
   focalLength = this.canvasService.focalLength
   drawCenterLines: boolean = true
   cameraPositionSensitivity: number = 0.01
@@ -74,87 +77,24 @@ export class Canvas {
       this.drawLine(0, this.canvasService.height / 2, this.canvasService.width, this.canvasService.height / 2, 0.5, 'white', 'square')
     }
     this.scenes.points.forEach(point => {
-      let relativePos: vector3D = this.getRelativePosition3D(point.pos, camera.pos, camera)
+      let relativePos: vector3D = this.mathService.getRelativePosition3D(point.pos, camera.pos, camera)
       if (relativePos.z > 0) {
-        let projectedPos: vector2D = this.getProjectedPosition2D(relativePos)
-        let renderedPos: vector2D = this.getRenderedPosition2D(projectedPos)
+        let projectedPos: vector2D = this.mathService.getProjectedPosition2D(relativePos, this.focalLength())
+        let renderedPos: vector2D = this.mathService.getRenderedPosition2D(projectedPos, this.canvasService.canvasCenter)
         this.drawPoint(renderedPos.x, renderedPos.y, 10, 'white')
       }
     });
     this.scenes.lines.forEach(line => {
-      const relativeStart: vector3D = this.getRelativePosition3D(line.start, camera.pos, camera)
-      const relativeEnd: vector3D = this.getRelativePosition3D(line.end, camera.pos, camera)
-      const relativeLine: line3D | number = this.cutLineAtEdge({start: relativeStart, end: relativeEnd}, this.planeZ)
+      const relativeStart: vector3D = this.mathService.getRelativePosition3D(line.start, camera.pos, camera)
+      const relativeEnd: vector3D = this.mathService.getRelativePosition3D(line.end, camera.pos, camera)
+      const relativeLine: line3D | number = this.mathService.cutLineAtEdge({start: relativeStart, end: relativeEnd}, this.planeZ)
       if (typeof relativeLine !== 'number') {
-        const projectedStart: vector2D = this.getProjectedPosition2D(relativeLine.start)
-        const projectedEnd: vector2D = this.getProjectedPosition2D(relativeLine.end)
-        const renderedStart: vector2D = this.getRenderedPosition2D(projectedStart)
-        const renderedEnd: vector2D = this.getRenderedPosition2D(projectedEnd)
+        const projectedStart: vector2D = this.mathService.getProjectedPosition2D(relativeLine.start, this.focalLength())
+        const projectedEnd: vector2D = this.mathService.getProjectedPosition2D(relativeLine.end, this.focalLength())
+        const renderedStart: vector2D = this.mathService.getRenderedPosition2D(projectedStart, this.canvasService.canvasCenter)
+        const renderedEnd: vector2D = this.mathService.getRenderedPosition2D(projectedEnd, this.canvasService.canvasCenter)
         this.drawLine(renderedStart.x, renderedStart.y, renderedEnd.x, renderedEnd.y, 10, 'white')
       }
     })
-  }
-
-  private getRelativePosition3D(position1: vector3D, position2: vector3D, camera: camera3D): vector3D {
-    const x: number = position1.x - position2.x
-    const y: number = position1.y - position2.y
-    const z: number = position1.z - position2.z
-
-    const yaw = camera.rotation.yaw
-    const pitch = camera.rotation.pitch
-    const roll = camera.rotation.roll
-
-    const x1 = x * Math.cos(yaw) - z * Math.sin(yaw)
-    const z1 = x * Math.sin(yaw) + z * Math.cos(yaw)
-    const y1 = y
-
-    const y2 = y1 * Math.cos(pitch) + z1 * Math.sin(pitch)
-    const z2 = -y1 * Math.sin(pitch) + z1 * Math.cos(pitch)
-    const x2 = x1
-
-    const x3 = x2 * Math.cos(roll) + y2 * Math.sin(roll)
-    const y3 = -x2 * Math.sin(roll) + y2 * Math.cos(roll)
-    const z3 = z2
-
-    return {x: x3, y: y3, z: z3}
-  }
-
-  private getProjectedPosition2D(relativePos: vector3D): vector2D {
-    const focalLength: number = this.focalLength()
-    return {
-      x: (focalLength * relativePos.x) / relativePos.z,
-      y: (focalLength * relativePos.y) / relativePos.z
-    }
-  }
-
-  private getRenderedPosition2D(projectedPos: vector2D): vector2D {
-    const canvasCenter: vector2D = this.canvasService.canvasCenter
-    return {
-      x: canvasCenter.x + projectedPos.x,
-      y: canvasCenter.y - projectedPos.y
-    }
-  }
-
-  private cutLineAtEdge(line: line3D, planeZ: number): line3D | number {
-    if (line.start.z > planeZ && line.end.z > planeZ) {
-      return line
-    } else if (line.start.z <= planeZ && line.end.z <= planeZ) {      
-      return 0
-    } else {
-      const intersectionPoint = this.getIntersectionPoint(line, planeZ)
-      if (line.start.z > planeZ) {
-        return {start: line.start, end: intersectionPoint}
-      } else {
-        return {start: intersectionPoint, end: line.end}
-      }
-    }
-  }
-
-  private getIntersectionPoint(line: line3D, planeZ: number): vector3D {
-   const t: number = (planeZ - line.start.z) / (line.end.z - line.start.z)
-   return {
-    x: line.start.x + (line.end.x - line.start.x) * t,
-    y: line.start.y + (line.end.y - line.start.y) * t,
-    z: planeZ}
   }
 }
