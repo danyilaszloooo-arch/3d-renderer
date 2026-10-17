@@ -8,7 +8,7 @@
       <p class="text-xs text-gray-500">drawCenterLines: </p>
       <input #lines type="checkbox" (input)="canvas.toggleLines(lines.checked)">
     </div>
-    <div class="w-fit h-fit flex flex-col justify-center items-center">
+    <!-- <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">cameraX</p>
       <input #camX type="range" min="-1000" max="1000" value="0"
       (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
@@ -37,7 +37,7 @@
       <p class="text-xs text-gray-500">cameraRoll</p>
       <input #camRoll type="range" min="-1000" max="1000" value="0"
       (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001])">
-    </div>
+    </div> -->
   </div>
   <app-canvas #canvas />
 </div>

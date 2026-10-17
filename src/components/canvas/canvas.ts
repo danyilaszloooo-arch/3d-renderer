@@ -3,7 +3,7 @@ import { Component, ElementRef, inject, viewChild, } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
 import { camera3D, rotation3D, vector3D } from '../../interfaces';
-import { InputService } from '../../services/input';
+import { InputService } from '../../services/input-service';
 import { DrawService } from '../../services/draw-service';
 
 @Component({
@@ -53,5 +53,9 @@ export class Canvas {
     this.renderService.renderPoints(this.ctx)
     this.renderService.renderLine(this.ctx)
     this.drawService.drawCenterLines(this.ctx, this.centerLines, this.canvasService.width, this.canvasService.height)
+  }
+
+  protected requestPointerLock(): void {
+    this.canvas().nativeElement.requestPointerLock()
   }
 }
