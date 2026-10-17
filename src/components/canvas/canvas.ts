@@ -1,3 +1,4 @@
+import { RenderService } from './../../services/render-service';
 import { Component, ElementRef, inject, viewChild, } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
@@ -17,6 +18,7 @@ export class Canvas {
   private mathService = inject(MathService)
   private inputService = inject(InputService)
   private drawService = inject(DrawService)
+  private renderService = inject(RenderService)
 
   private focalLength = this.canvasService.focalLength
   private centerLines: boolean = false
@@ -55,33 +57,11 @@ export class Canvas {
   private drawScene(camera: camera3D = this.scenes.camera()): void {
     this.ctx.clearRect(0, 0, this.canvasService.width, this.canvasService.height)
     this.scenes.points.forEach(point => {
-      this.renderPoint(point, camera)
+      this.renderService.renderPoint(this.ctx, point, camera, this.focalLength(), this.canvasService.canvasCenter)
     });
     this.scenes.lines.forEach(line => {
-      this.renderLine(line, camera)
+      this.renderService.renderLine(this.ctx, line, camera, this.planeZ, this.focalLength(), this.canvasService.canvasCenter)
     })
     this.drawService.drawCenterLines(this.ctx, this.centerLines, this.canvasService.width, this.canvasService.height)
-  }
-  
-  private renderPoint(point: point3D, camera: camera3D) {
-    let relativePos: vector3D = this.mathService.getRelativePosition3D(point.pos, camera.pos, camera)
-    if (relativePos.z > 0) {
-      let projectedPos: vector2D = this.mathService.getProjectedPosition2D(relativePos, this.focalLength())
-      let renderedPos: vector2D = this.mathService.getRenderedPosition2D(projectedPos, this.canvasService.canvasCenter)
-      this.drawService.drawPoint(this.ctx, renderedPos.x, renderedPos.y, 10, 'white')
-    }
-  }
-
-  private renderLine(line: line3D, camera: camera3D) {
-    const relativeStart: vector3D = this.mathService.getRelativePosition3D(line.start, camera.pos, camera)
-    const relativeEnd: vector3D = this.mathService.getRelativePosition3D(line.end, camera.pos, camera)
-    const relativeLine: line3D | number = this.mathService.cutLineAtEdge({start: relativeStart, end: relativeEnd}, this.planeZ)
-    if (typeof relativeLine !== 'number') {
-      const projectedStart: vector2D = this.mathService.getProjectedPosition2D(relativeLine.start, this.focalLength())
-      const projectedEnd: vector2D = this.mathService.getProjectedPosition2D(relativeLine.end, this.focalLength())
-      const renderedStart: vector2D = this.mathService.getRenderedPosition2D(projectedStart, this.canvasService.canvasCenter)
-      const renderedEnd: vector2D = this.mathService.getRenderedPosition2D(projectedEnd, this.canvasService.canvasCenter)
-      this.drawService.drawLine(this.ctx, renderedStart.x, renderedStart.y, renderedEnd.x, renderedEnd.y, 10, 'white')
-    }
   }
 }
