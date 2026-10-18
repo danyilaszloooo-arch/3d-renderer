@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { camera3D, line3D, vector2D, vector3D } from '../interfaces';
+import { camera3D, line3D, mesh2D, mesh3D, vector2D, vector3D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MathService {
-  public getRelativePosition3D(position1: vector3D, position2: vector3D, camera: camera3D): vector3D {
-    const x: number = position1.x - position2.x
-    const y: number = position1.y - position2.y
-    const z: number = position1.z - position2.z
+  public toCameraSpace3D(position1: vector3D, camera: camera3D): vector3D {
+    const x: number = position1.x - camera.pos.x
+    const y: number = position1.y - camera.pos.y
+    const z: number = position1.z - camera.pos.z
   
     const yaw = camera.rotation.yaw
     const pitch = -camera.rotation.pitch
@@ -49,7 +49,7 @@ export class MathService {
     } else if (line.start.z <= planeZ && line.end.z <= planeZ) {      
       return 0
     } else {
-      const intersectionPoint = this.getIntersectionPoint(line, planeZ)
+      const intersectionPoint = this.getIntersectionPoint(line.start, line.end, planeZ)
       if (line.start.z > planeZ) {
         return {start: line.start, end: intersectionPoint}
       } else {
@@ -58,11 +58,72 @@ export class MathService {
     }
   }
 
-  private getIntersectionPoint(line: line3D, planeZ: number): vector3D {
-   const t: number = (planeZ - line.start.z) / (line.end.z - line.start.z)
+  private getIntersectionPoint(point1: vector3D, point2: vector3D, near: number): vector3D {
+   const t: number = (near - point1.z) / (point2.z - point1.z)
    return {
-    x: line.start.x + (line.end.x - line.start.x) * t,
-    y: line.start.y + (line.end.y - line.start.y) * t,
-    z: planeZ}
+    x: point1.x + (point2.x - point1.x) * t,
+    y: point1.y + (point2.y - point1.y) * t,
+    z: near}
+  }
+
+  public getOrientation(mesh: mesh2D): number {
+    return (mesh.B.x - mesh.A.x) * (mesh.C.y - mesh.A.y) - (mesh.B.y - mesh.A.y) * (mesh.C.x - mesh.A.x)
+  }
+
+  public countPointsInFrontOfNear(mesh: mesh3D, near: number): number {
+    let count: number = 0
+    count += mesh.A.z >= near ? 1 : 0
+    count += mesh.B.z >= near ? 1 : 0
+    count += mesh.C.z >= near ? 1 : 0
+    return count
+  }
+
+  public clipTriangleToNear(mesh: mesh3D, near: number): mesh3D[] {
+    let order: vector3D[][] = [
+      [mesh.A, mesh.B],
+      [mesh.B, mesh.C],
+      [mesh.C, mesh.A]
+    ]
+    let points: vector3D[] = []
+    for (let i = 0; i < order.length; i++) {
+      const start: vector3D = order[i][0]
+      const end: vector3D = order[i][1]
+      if (start.z >= near && end.z >= near) {
+        points.push(start)
+      }
+      if (start.z >= near && end.z < near) {
+        points.push(start)
+        points.push(this.getIntersectionPoint(start, end, near))
+      }
+      if (start.z < near && end.z >= near) {
+        points.push(this.getIntersectionPoint(start, end, near))
+      }
+    }
+    if (points.length === 4) {
+      return this.renderSubTriangles(points)
+    } else if (points.length === 3) {
+      return ([{A: points[0], B: points[1], C: points[2]}])
+    }
+    return []
+  }
+
+  public renderSubTriangles(points: vector3D[]): mesh3D[] {
+    const A: vector3D = points[0]
+    const B: vector3D = points[1]
+    const C: vector3D = points[2]
+    const D: vector3D = points[3]
+
+    return [
+      {
+        A: A,
+        B: B,
+        C: C
+      },
+      {
+        A: A,
+        B: C,
+        C: D
+      }
+    ]
   }
 }

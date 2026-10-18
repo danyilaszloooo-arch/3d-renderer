@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { mesh2D, vector2D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,21 @@ export class DrawService {
     context.closePath()
   }
 
-  public drawCenterLines(context: CanvasRenderingContext2D, enabled: boolean, canvasWidth: number, canvasHeight: number) {
+  public drawMesh(context: CanvasRenderingContext2D, mesh: mesh2D, edgeWidth: number, edgeColor: string = 'black', fillColor: string = 'red', lineCap: 'butt' | 'round' | 'square' = 'round', lineJoin: 'bevel' | 'miter' | 'round' = 'round'): void {
+    context.beginPath()
+    context.moveTo(mesh.A.x, mesh.A.y)
+    context.lineTo(mesh.B.x, mesh.B.y)
+    context.lineTo(mesh.C.x, mesh.C.y)
+    context.lineTo(mesh.A.x, mesh.A.y)
+    context.strokeStyle = edgeColor
+    context.fillStyle = fillColor
+    context.lineWidth = edgeWidth
+    context.closePath()
+    context.fill()
+    context.stroke()
+  }
+
+  public drawCenterLines(context: CanvasRenderingContext2D, enabled: boolean, canvasWidth: number, canvasHeight: number): void {
     if (enabled) {
       this.drawLine(context ,canvasWidth / 2, 0, canvasWidth / 2, canvasHeight, 0.5, 'white', 'square')
       this.drawLine(context ,0, canvasHeight / 2, canvasWidth, canvasHeight / 2, 0.5, 'white', 'square')

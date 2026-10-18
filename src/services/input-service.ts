@@ -23,17 +23,14 @@ export class InputService {
       const isLocked = document.pointerLockElement !== null
       this.pointerLocked.set(isLocked)
       if (!isLocked) this.heldKeys.clear()
-      console.log('pointer locked: ' + isLocked);
     })
   }
 
-  private anyKeyHeld(): boolean {
+  public anyKeyHeld(): boolean {
     return this.heldKeys.size > 0
   }
 
-  private isKeyHeld(key: string): boolean {
+  public isKeyHeld(key: string): boolean {
     return this.heldKeys.has(key)
   }
-
-  
 }

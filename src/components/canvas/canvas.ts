@@ -35,21 +35,28 @@ export class Canvas {
     this.drawScene()
   }
 
+  public changeNearPoint(value: number): void {
+    this.renderService.changeNearPoint(value)
+    this.drawScene()
+  }
+
   public toggleLines(value: boolean): void {
     this.centerLines = value
     this.drawScene()
   }
 
-  public changeCameraTransform(position: vector3D, rotation: rotation3D, sensitivity: number[]): void {
+  public changeCameraTransform(position: vector3D, rotation: rotation3D, sensitivity: number[], nearPoint: number): void {
     this.scenes.setCameraTransform(
       {x: position.x * sensitivity[0], y: position.y * sensitivity[0], z: position.z * sensitivity[0]},
-      {yaw: rotation.yaw * sensitivity[1], pitch: rotation.pitch * sensitivity[1], roll: rotation.roll * sensitivity[1]}
+      {yaw: rotation.yaw * sensitivity[1], pitch: rotation.pitch * sensitivity[1], roll: rotation.roll * sensitivity[1]},
+      nearPoint
     )
     this.drawScene()
   }
  
   private drawScene(camera: camera3D = this.scenes.camera()): void {
     this.ctx.clearRect(0, 0, this.canvasService.width, this.canvasService.height)
+    this.renderService.renderMeshes(this.ctx)
     this.renderService.renderPoints(this.ctx)
     this.renderService.renderLine(this.ctx)
     this.drawService.drawCenterLines(this.ctx, this.centerLines, this.canvasService.width, this.canvasService.height)
