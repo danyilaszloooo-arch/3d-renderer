@@ -5,6 +5,7 @@ import { Scenes } from '../../services/scenes';
 import { camera3D, rotation3D, vector3D } from '../../interfaces';
 import { InputService } from '../../services/input-service';
 import { DrawService } from '../../services/draw-service';
+import { FrameService } from '../../services/frame-service';
 
 @Component({
   selector: 'app-canvas',
@@ -17,13 +18,12 @@ export class Canvas {
   private inputService = inject(InputService)
   private drawService = inject(DrawService)
   private renderService = inject(RenderService)
+  public frameService = inject(FrameService)
+  public FPS: number = 0
 
   private centerLines: boolean = false
   public cameraPositionSensitivity: number = 0.01
   public cameraRotationSensitivity: number = 0.001
-  private previousFrame: number | null = null
-  public FPS: WritableSignal<number> = signal(0)
-  private last60FPSValues: number[] = []
 
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
   private ctx!: CanvasRenderingContext2D
@@ -78,38 +78,12 @@ export class Canvas {
   }
 
   public startNextFrame = (frame: number): void => {
-    this.getAverageFPS(frame)
+    this.frameService.getAverageFPS(frame)
 
-
+    
 
     if (this.inputService.pointerLocked()) {
       requestAnimationFrame(this.startNextFrame)
-    }
-  }
-
-  private deltaTime(thisFrame: number) {
-    if (this.previousFrame === null) {
-      this.previousFrame = thisFrame
-    }
-    const deltaTime = (thisFrame - this.previousFrame) / 1000
-    this.previousFrame = thisFrame
-    return deltaTime
-  }
-
-  private getAverageFPS(frame: number) {
-    this.last60FPSValues.unshift(1 / this.deltaTime(frame))
-    if (this.last60FPSValues.length > 120) {
-      this.last60FPSValues.pop()
-    }
-    let sum: number = 0
-    for (let i = 0; i < this.last60FPSValues.length; i++) {
-      sum += this.last60FPSValues[i]
-    }
-    const fps: number = Math.floor(sum / this.last60FPSValues.length)
-    if (fps === Infinity) {
-      this.FPS.set(0)
-    } else {
-      this.FPS.set(fps)
     }
   }
 }
