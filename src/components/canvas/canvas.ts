@@ -1,5 +1,5 @@
 import { RenderService } from './../../services/render-service';
-import { Component, ElementRef, inject, viewChild, } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, viewChild, WritableSignal, } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
 import { camera3D, rotation3D, vector3D } from '../../interfaces';
@@ -21,6 +21,9 @@ export class Canvas {
   private centerLines: boolean = false
   public cameraPositionSensitivity: number = 0.01
   public cameraRotationSensitivity: number = 0.001
+  private previousFrame: number | null = null
+  public FPS: WritableSignal<number> = signal(0)
+  private last60FPSValues: number[] = []
 
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
   private ctx!: CanvasRenderingContext2D
@@ -28,6 +31,14 @@ export class Canvas {
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('2d')!
     this.drawScene()
+  }
+
+  constructor() {
+    effect(() => {
+      if (this.inputService.pointerLocked()) {
+        requestAnimationFrame(this.startNextFrame)
+      }
+    })
   }
 
   public changeFocalLength(value: number): void {
@@ -64,5 +75,41 @@ export class Canvas {
 
   protected requestPointerLock(): void {
     this.canvas().nativeElement.requestPointerLock()
+  }
+
+  public startNextFrame = (frame: number): void => {
+    this.getAverageFPS(frame)
+
+
+
+    if (this.inputService.pointerLocked()) {
+      requestAnimationFrame(this.startNextFrame)
+    }
+  }
+
+  private deltaTime(thisFrame: number) {
+    if (this.previousFrame === null) {
+      this.previousFrame = thisFrame
+    }
+    const deltaTime = (thisFrame - this.previousFrame) / 1000
+    this.previousFrame = thisFrame
+    return deltaTime
+  }
+
+  private getAverageFPS(frame: number) {
+    this.last60FPSValues.unshift(1 / this.deltaTime(frame))
+    if (this.last60FPSValues.length > 120) {
+      this.last60FPSValues.pop()
+    }
+    let sum: number = 0
+    for (let i = 0; i < this.last60FPSValues.length; i++) {
+      sum += this.last60FPSValues[i]
+    }
+    const fps: number = Math.floor(sum / this.last60FPSValues.length)
+    if (fps === Infinity) {
+      this.FPS.set(0)
+    } else {
+      this.FPS.set(fps)
+    }
   }
 }

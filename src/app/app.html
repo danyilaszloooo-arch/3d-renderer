@@ -43,6 +43,9 @@
       <input #camRoll type="range" min="-1000" max="1000" value="0"
       (input)="canvas.changeCameraTransform({x: camX.valueAsNumber, y: camY.valueAsNumber, z: camZ.valueAsNumber}, {yaw: camYaw.valueAsNumber, pitch: camPitch.valueAsNumber, roll: camRoll.valueAsNumber}, [0.01, 0.001], nearPoint.valueAsNumber)">
     </div>
+    <div class="w-fit h-fit flex flex-col justify-center items-center">
+      <p class="text-white">FPS: {{ canvas.FPS() }}</p>
+    </div>
   </div>
   <app-canvas #canvas />
 </div>

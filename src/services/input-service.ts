@@ -1,12 +1,13 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { effect, Injectable, signal, WritableSignal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InputService {
+
   private readonly heldKeys: Set<string> = new Set<string>()
 
-  private readonly pointerLocked: WritableSignal<boolean> = signal(false)
+  public readonly pointerLocked: WritableSignal<boolean> = signal(false)
 
   constructor() {
     window.addEventListener('keydown', key => {
@@ -22,6 +23,7 @@ export class InputService {
     document.addEventListener('pointerlockchange', () => {
       const isLocked = document.pointerLockElement !== null
       this.pointerLocked.set(isLocked)
+
       if (!isLocked) this.heldKeys.clear()
     })
   }
