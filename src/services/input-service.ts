@@ -5,7 +5,7 @@ import { Injectable, signal, WritableSignal } from '@angular/core';
 })
 export class InputService {
 
-  private readonly heldKeys: Set<string> = new Set<string>()
+  public readonly heldKeys: Set<string> = new Set<string>()
 
   public readonly pointerLocked: WritableSignal<boolean> = signal(false)
 

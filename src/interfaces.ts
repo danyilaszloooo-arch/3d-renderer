@@ -20,7 +20,7 @@ export interface vector3D {
 }
 
 export interface camera3D {
-    pos: vector3D
+    position: vector3D
     focalLength: number
     rotation: rotation3D
     nearPoint: number

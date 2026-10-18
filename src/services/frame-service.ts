@@ -19,7 +19,7 @@ export class FrameService {
 
   public getAverageFPS(frame: number): void {
     this.lastFrameValues.unshift(1 / this.deltaTime(frame))
-    if (this.lastFrameValues.length > 120) {
+    if (this.lastFrameValues.length > 240) {
       this.lastFrameValues.pop()
     }
     let sum: number = 0

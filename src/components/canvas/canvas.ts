@@ -6,6 +6,7 @@ import { camera3D, rotation3D, vector3D } from '../../interfaces';
 import { InputService } from '../../services/input-service';
 import { DrawService } from '../../services/draw-service';
 import { FrameService } from '../../services/frame-service';
+import { MovementService } from '../../services/movement-service';
 
 @Component({
   selector: 'app-canvas',
@@ -18,8 +19,8 @@ export class Canvas {
   private inputService = inject(InputService)
   private drawService = inject(DrawService)
   private renderService = inject(RenderService)
-  public frameService = inject(FrameService)
-  public FPS: number = 0
+  private frameService = inject(FrameService)
+  private movementService = inject(MovementService)
 
   private centerLines: boolean = false
   public cameraPositionSensitivity: number = 0.01
@@ -78,12 +79,16 @@ export class Canvas {
   }
 
   public startNextFrame = (frame: number): void => {
+    const deltaTime: number = this.frameService.deltaTime(frame)
     this.frameService.getAverageFPS(frame)
-
-
+    this.movementService.movement(deltaTime)
+    this.drawScene()
 
     if (this.inputService.pointerLocked()) {
       requestAnimationFrame(this.startNextFrame)
+    } else {
+      this.frameService.FPS.set(0)
+      this.frameService.lastFrameValues = []
     }
   }
 }

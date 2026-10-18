@@ -6,9 +6,9 @@ import { camera3D, line3D, mesh2D, mesh3D, vector2D, vector3D } from '../interfa
 })
 export class MathService {
   public toCameraSpace3D(position1: vector3D, camera: camera3D): vector3D {
-    const x: number = position1.x - camera.pos.x
-    const y: number = position1.y - camera.pos.y
-    const z: number = position1.z - camera.pos.z
+    const x: number = position1.x - camera.position.x
+    const y: number = position1.y - camera.position.y
+    const z: number = position1.z - camera.position.z
   
     const yaw = camera.rotation.yaw
     const pitch = -camera.rotation.pitch
