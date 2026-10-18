@@ -1,5 +1,5 @@
 import { RenderService } from './../../services/render-service';
-import { Component, effect, ElementRef, inject, signal, viewChild, WritableSignal, } from '@angular/core';
+import { Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
 import { camera3D, rotation3D, vector3D } from '../../interfaces';
@@ -80,7 +80,7 @@ export class Canvas {
   public startNextFrame = (frame: number): void => {
     this.frameService.getAverageFPS(frame)
 
-    
+
 
     if (this.inputService.pointerLocked()) {
       requestAnimationFrame(this.startNextFrame)
