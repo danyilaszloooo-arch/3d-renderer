@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { mesh2D, vector2D } from '../interfaces';
+import { mesh2D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',

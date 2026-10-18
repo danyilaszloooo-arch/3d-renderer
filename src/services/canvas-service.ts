@@ -1,4 +1,4 @@
-import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { vector2D } from '../interfaces';
 import { Scenes } from './scenes';
 
