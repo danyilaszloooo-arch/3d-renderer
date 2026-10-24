@@ -79,9 +79,9 @@ export class Canvas {
   }
 
   public startNextFrame = (frame: number): void => {
-    const deltaTime: number = this.frameService.deltaTime(frame)
-    this.frameService.getAverageFPS(frame)
-    this.movementService.movement(deltaTime)
+    this.frameService.getAverageFPS(frame) // also calculates delta time
+    const deltaTime: number = this.frameService.deltaTime()
+    this.movementService.movement(this.frameService.deltaTime())
     this.drawScene()
 
     if (this.inputService.pointerLocked()) {
