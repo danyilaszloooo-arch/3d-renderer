@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { InputService } from './input-service';
 import { FrameService } from './frame-service';
 import { Scenes } from './scenes';
+import { vector2D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ export class MovementService {
   private inputService = inject(InputService)
   private frameService = inject(FrameService)
   private scenes = inject(Scenes)
+  private mouseSensitivity: number = 0.005
 
   private speed: number = 10
 
@@ -25,6 +27,18 @@ export class MovementService {
     if (this.inputService.isKeyHeld('Space')) y += this.speed * deltaTime
     if (this.inputService.isKeyHeld('ShiftLeft')) y -= this.speed * deltaTime
 
-    this.scenes.changeCameraTransform({x: x, y: y, z: z})
+    const mouseMovement: vector2D = this.inputService.getMouseMovement()
+
+    this.scenes.changeCameraTransform(
+      {
+        x: x,
+        y: y,
+        z: z
+      },
+      {
+        yaw: mouseMovement.x * this.mouseSensitivity,
+        pitch: -mouseMovement.y * this.mouseSensitivity,
+        roll: 0
+      })
   }
 }
