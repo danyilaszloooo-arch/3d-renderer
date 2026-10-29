@@ -9,10 +9,6 @@
       <input #nearPoint type="range" min="1" max="10000" value="0"
       (input)="canvas3DRenderer.renderService.changeNearPoint(nearPoint.valueAsNumber)">
     </div>
-    <div class="w-fit h-fit flex flex-row justify-center items-center">
-      <p class="text-xs text-gray-500">drawCenterLines: </p>
-      <input #lines type="checkbox" (input)="canvas3DRenderer.toggleLines(lines.checked)">
-    </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-white">FPS: {{ frameService.FPS() }}</p>
     </div>

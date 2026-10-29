@@ -22,7 +22,6 @@ export class Canvas3DRenderer {
   private frameService = inject(FrameService)
   private movementService = inject(MovementService)
 
-  private centerLines: boolean = false
   public cameraPositionSensitivity: number = 0.01
   public cameraRotationSensitivity: number = 0.001
 
@@ -42,11 +41,6 @@ export class Canvas3DRenderer {
     })
   }
 
-  public toggleLines(value: boolean): void {
-    this.centerLines = value
-    this.drawScene()
-  }
-
   public changeCameraTransform(position: vector3D, rotation: rotation3D, sensitivity: number[], nearPoint: number): void {
     this.scenes.setCameraTransform(
       {x: position.x * sensitivity[0], y: position.y * sensitivity[0], z: position.z * sensitivity[0]},
@@ -61,7 +55,6 @@ export class Canvas3DRenderer {
     this.renderService.renderMeshes(this.ctx)
     this.renderService.renderPoints(this.ctx)
     this.renderService.renderLine(this.ctx)
-    this.drawService.drawCenterLines(this.ctx, this.centerLines, this.canvasService.width, this.canvasService.height)
   }
 
   protected requestPointerLock(): void {

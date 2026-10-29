@@ -39,11 +39,4 @@ export class DrawService {
     context.fill()
     context.stroke()
   }
-
-  public drawCenterLines(context: CanvasRenderingContext2D, enabled: boolean, canvasWidth: number, canvasHeight: number): void {
-    if (enabled) {
-      this.drawLine(context ,canvasWidth / 2, 0, canvasWidth / 2, canvasHeight, 0.5, 'white', 'square')
-      this.drawLine(context ,0, canvasHeight / 2, canvasWidth, canvasHeight / 2, 0.5, 'white', 'square')
-    }
-  }
 }
