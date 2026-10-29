@@ -2,20 +2,20 @@
   <div class="w-fit h-fit flex flex-row justify-center items-center gap-4 bg-gray-900 border-2 border-solid border-gray-800 p-3 rounded-lg ">
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">focalLength</p>
-      <input #fl type="range" min="0" max="2000" value="500" (input)="canvas.changeFocalLength(fl.valueAsNumber)">
+      <input #fl type="range" min="0" max="2000" value="500" (input)="canvas3DRenderer.changeFocalLength(fl.valueAsNumber)">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-xs text-gray-500">nearPoint</p>
       <input #nearPoint type="range" min="1" max="10000" value="0"
-      (input)="canvas.changeNearPoint(nearPoint.valueAsNumber)">
+      (input)="canvas3DRenderer.changeNearPoint(nearPoint.valueAsNumber)">
     </div>
     <div class="w-fit h-fit flex flex-row justify-center items-center">
       <p class="text-xs text-gray-500">drawCenterLines: </p>
-      <input #lines type="checkbox" (input)="canvas.toggleLines(lines.checked)">
+      <input #lines type="checkbox" (input)="canvas3DRenderer.toggleLines(lines.checked)">
     </div>
     <div class="w-fit h-fit flex flex-col justify-center items-center">
       <p class="text-white">FPS: {{ frameService.FPS() }}</p>
     </div>
   </div>
-  <app-canvas-3d-renderer #canvas />
+  <app-canvas-3d-renderer #canvas3DRenderer />
 </div>
