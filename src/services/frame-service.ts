@@ -19,7 +19,6 @@ export class FrameService {
   }
 
   public getAverageFPS(frame: number): void {
-    this.getDeltaTime(frame)
     this.lastFrameValues.unshift(1 / this.deltaTime())
     if (this.lastFrameValues.length > 240) {
       this.lastFrameValues.pop()
