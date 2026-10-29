@@ -26,7 +26,7 @@ export class Canvas3DRenderer {
   public cameraPositionSensitivity: number = 0.01
   public cameraRotationSensitivity: number = 0.001
 
-  private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
+  private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas3DRenderer')
   private ctx!: CanvasRenderingContext2D
 
   ngAfterViewInit() {

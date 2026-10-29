@@ -9,7 +9,7 @@ import { CanvasService } from '../../services/canvas-service';
 export class CanvasWebglRenderer {
   protected canvasService = inject(CanvasService)
 
-  private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas')
+  private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvasWebglRenderer')
   private ctx!: WebGL2RenderingContext
 
   ngAfterViewInit() {
