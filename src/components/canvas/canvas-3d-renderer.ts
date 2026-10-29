@@ -18,7 +18,7 @@ export class Canvas3DRenderer {
   private scenes = inject(Scenes)
   private inputService = inject(InputService)
   private drawService = inject(DrawService)
-  private renderService = inject(RenderService)
+  public renderService = inject(RenderService)
   private frameService = inject(FrameService)
   private movementService = inject(MovementService)
 
@@ -40,16 +40,6 @@ export class Canvas3DRenderer {
         requestAnimationFrame(this.startNextFrame)
       }
     })
-  }
-
-  public changeFocalLength(value: number): void {
-    this.renderService.changeFocalLength(value)
-    this.drawScene()
-  }
-
-  public changeNearPoint(value: number): void {
-    this.renderService.changeNearPoint(value)
-    this.drawScene()
   }
 
   public toggleLines(value: boolean): void {
