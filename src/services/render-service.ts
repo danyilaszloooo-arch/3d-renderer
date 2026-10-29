@@ -21,10 +21,6 @@ export class RenderService {
     this.camera.update(camera => ({...camera, focalLength: value}))
   }
 
-  public changeNearPoint(value: number): void {
-    this.camera.update(camera => ({...camera, nearPoint: value}))
-  }
-
   public renderPoints(context: CanvasRenderingContext2D): void {
     this.scenes.points.forEach(point => {
       let relativePos: vector3D = this.mathService.toCameraSpace3D(point.pos, this.camera())
