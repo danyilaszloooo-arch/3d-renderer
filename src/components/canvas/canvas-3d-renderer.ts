@@ -1,4 +1,4 @@
-import { RenderService } from './../../services/render-service';
+import { RenderService } from '../../services/render-service';
 import { Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
@@ -9,11 +9,11 @@ import { FrameService } from '../../services/frame-service';
 import { MovementService } from '../../services/movement-service';
 
 @Component({
-  selector: 'app-canvas',
+  selector: 'app-canvas-3d-renderer',
   imports: [],
-  templateUrl: './canvas.html',
+  templateUrl: './canvas-3d-renderer.html',
 })
-export class Canvas {
+export class Canvas3DRenderer {
   protected canvasService = inject(CanvasService)
   private scenes = inject(Scenes)
   private inputService = inject(InputService)

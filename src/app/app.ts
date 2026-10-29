@@ -1,10 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { Canvas } from '../components/canvas/canvas';
+import { Canvas3DRenderer } from '../components/canvas/canvas-3d-renderer';
 import { FrameService } from '../services/frame-service';
 
 @Component({
   selector: 'app-root',
-  imports: [Canvas],
+  imports: [Canvas3DRenderer],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
