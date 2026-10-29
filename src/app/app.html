@@ -1,13 +1,15 @@
-<div class="w-full h-screen bg-black flex flex-col justify-center items-center gap-2">
-  <div class="w-fit h-fit flex flex-row justify-center items-center gap-4 bg-gray-900 border-2 border-solid border-gray-800 p-3 rounded-lg ">
-    <div class="w-fit h-fit flex flex-col justify-center items-center">
-      <p class="text-xs text-gray-500">focalLength</p>
-      <input #fl type="range" min="0" max="2000" value="500" (input)="canvas3DRenderer.renderService.changeFocalLength(fl.valueAsNumber)">
+<div class="w-full h-screen bg-gray-950 flex flex-col justify-center items-center gap-2">
+  <div class="w-fit h-fit flex flex-col gap-2">
+    <div class="w-full h-fit flex flex-row justify-center items-center gap-4 bg-gray-900 border-2 border-solid border-gray-800 p-3 rounded-lg ">
+      <div class="w-fit h-fit flex flex-col justify-center items-center">
+        <p class="text-xs text-gray-500">focalLength</p>
+        <input #fl type="range" min="0" max="2000" value="500" (input)="canvas3DRenderer.renderService.changeFocalLength(fl.valueAsNumber)">
+      </div>
+      <div class="w-fit h-fit flex flex-col justify-center items-center">
+        <p class="text-white">FPS: {{ frameService.FPS() }}</p>
+      </div>
     </div>
-    <div class="w-fit h-fit flex flex-col justify-center items-center">
-      <p class="text-white">FPS: {{ frameService.FPS() }}</p>
-    </div>
+    <app-canvas-3d-renderer #canvas3DRenderer />
+    <app-canvas-webgl-renderer #canvasWebglRenderer />
   </div>
-  <app-canvas-3d-renderer #canvas3DRenderer />
-  <app-canvas-webgl-renderer #canvasWebglRenderer />
 </div>
