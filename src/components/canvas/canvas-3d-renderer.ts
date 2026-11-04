@@ -4,7 +4,6 @@ import { CanvasService } from '../../services/canvas-service';
 import { Scenes } from '../../services/scenes';
 import { camera3D, rotation3D, vector3D } from '../../interfaces';
 import { InputService } from '../../services/input-service';
-import { DrawService } from '../../services/draw-service';
 import { FrameService } from '../../services/frame-service';
 import { MovementService } from '../../services/movement-service';
 
