@@ -15,12 +15,14 @@ export class CanvasWebglRenderer {
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvasWebglRenderer')
   private ctx!: WebGL2RenderingContext
   private program!: WebGLProgram
+  private triangleVao!: WebGLVertexArrayObject
 
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('webgl2')!
     const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, TRIANGLE_VERTEX_SHADER)
     const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, TRIANGLE_FRAGMENT_SHADER)
     this.program = this.buildProgram(vertexShader, fragmentShader)
+    this.buildTriangle()
     this.drawScene()
   }
 
@@ -69,5 +71,23 @@ export class CanvasWebglRenderer {
       throw new Error(this.ctx.getProgramInfoLog(program)!)
     }
     return program
+  }
+
+  private buildTriangle(): void {
+    const triangle: Float32Array = new Float32Array(
+      [
+        -0.5, -0.5,
+        0.5, -0.5,
+        0.0,  0.5
+      ]
+    )
+    this.triangleVao = this.ctx.createVertexArray()
+    this.ctx.bindVertexArray(this.triangleVao)
+    const buffer: WebGLBuffer = this.ctx.createBuffer()
+    this.ctx.bindBuffer(this.ctx.ARRAY_BUFFER, buffer)
+    this.ctx.bufferData(this.ctx.ARRAY_BUFFER, triangle, this.ctx.STATIC_DRAW)
+    this.ctx.enableVertexAttribArray(0)
+    this.ctx.vertexAttribPointer(0, 2, this.ctx.FLOAT, false, 0, 0)
+    this.ctx.bindVertexArray(null)
   }
 }
