@@ -1,7 +1,7 @@
 import { Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { InputService } from '../../services/input-service';
-import { POINT_VERTEX_SHADER, POINT_FRAGMENT_SHADER } from './point-shaders';
+import { TRIANGLE_VERTEX_SHADER, TRIANGLE_FRAGMENT_SHADER } from './triangle-shaders';
 
 @Component({
   selector: 'app-canvas-webgl-renderer',
@@ -18,8 +18,8 @@ export class CanvasWebglRenderer {
 
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('webgl2')!
-    const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, POINT_VERTEX_SHADER)
-    const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, POINT_FRAGMENT_SHADER)
+    const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, TRIANGLE_VERTEX_SHADER)
+    const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, TRIANGLE_FRAGMENT_SHADER)
     this.program = this.buildProgram(vertexShader, fragmentShader)
     this.drawScene()
   }
