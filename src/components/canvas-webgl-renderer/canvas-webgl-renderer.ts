@@ -49,7 +49,8 @@ export class CanvasWebglRenderer {
     this.ctx.clearColor(0 / 255, 54 / 255, 90 / 255, 1)
     this.ctx.clear(this.ctx.COLOR_BUFFER_BIT)
     this.ctx.useProgram(this.program)
-    this.ctx.drawArrays(this.ctx.POINTS, 0, 1)
+    this.ctx.bindVertexArray(this.triangleVao)
+    this.ctx.drawArrays(this.ctx.TRIANGLES, 0, 3)
   }
 
   private buildShader(type: number, source: string): WebGLShader {
