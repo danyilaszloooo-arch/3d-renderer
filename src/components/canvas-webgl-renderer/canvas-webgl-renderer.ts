@@ -14,12 +14,16 @@ export class CanvasWebglRenderer {
 
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvasWebglRenderer')
   private ctx!: WebGL2RenderingContext
+  private program!: WebGLProgram
 
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('webgl2')!
+    const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, POINT_VERTEX_SHADER)
+    const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, POINT_FRAGMENT_SHADER)
+    this.program = this.buildProgram(vertexShader, fragmentShader)
     this.drawScene()
-    this.buildShader(this.ctx.VERTEX_SHADER, POINT_VERTEX_SHADER)
-    this.buildShader(this.ctx.FRAGMENT_SHADER, POINT_FRAGMENT_SHADER)
+    this.ctx.useProgram(this.program)
+    this.ctx.drawArrays(this.ctx.POINTS, 0, 1)
   }
 
   constructor() {
@@ -36,6 +40,8 @@ export class CanvasWebglRenderer {
 
   private nextFrame = (): void => {
     this.drawScene()
+    this.ctx.useProgram(this.program)
+    this.ctx.drawArrays(this.ctx.POINTS, 0, 1)
     if (this.inputService.pointerLocked()) {
       requestAnimationFrame(this.nextFrame)
     }
@@ -54,5 +60,16 @@ export class CanvasWebglRenderer {
       throw new Error(this.ctx.getShaderInfoLog(shader)!)
     }
     return shader
+  }
+
+  private buildProgram(vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram {
+    const program: WebGLProgram = this.ctx.createProgram()
+    this.ctx.attachShader(program, vertexShader)
+    this.ctx.attachShader(program, fragmentShader)
+    this.ctx.linkProgram(program)
+    if (!this.ctx.getProgramParameter(program, this.ctx.LINK_STATUS)) {
+      throw new Error(this.ctx.getProgramInfoLog(program)!)
+    }
+    return program
   }
 }
