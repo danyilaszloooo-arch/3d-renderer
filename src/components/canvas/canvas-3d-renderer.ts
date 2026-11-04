@@ -17,7 +17,6 @@ export class Canvas3DRenderer {
   protected canvasService = inject(CanvasService)
   private scenes = inject(Scenes)
   private inputService = inject(InputService)
-  private drawService = inject(DrawService)
   public renderService = inject(RenderService)
   private frameService = inject(FrameService)
   private movementService = inject(MovementService)
