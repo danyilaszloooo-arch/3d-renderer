@@ -22,8 +22,6 @@ export class CanvasWebglRenderer {
     const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, POINT_FRAGMENT_SHADER)
     this.program = this.buildProgram(vertexShader, fragmentShader)
     this.drawScene()
-    this.ctx.useProgram(this.program)
-    this.ctx.drawArrays(this.ctx.POINTS, 0, 1)
   }
 
   constructor() {
@@ -40,8 +38,6 @@ export class CanvasWebglRenderer {
 
   private nextFrame = (): void => {
     this.drawScene()
-    this.ctx.useProgram(this.program)
-    this.ctx.drawArrays(this.ctx.POINTS, 0, 1)
     if (this.inputService.pointerLocked()) {
       requestAnimationFrame(this.nextFrame)
     }
@@ -50,6 +46,8 @@ export class CanvasWebglRenderer {
   private drawScene(): void {
     this.ctx.clearColor(0 / 255, 54 / 255, 90 / 255, 1)
     this.ctx.clear(this.ctx.COLOR_BUFFER_BIT)
+    this.ctx.useProgram(this.program)
+    this.ctx.drawArrays(this.ctx.POINTS, 0, 1)
   }
 
   private buildShader(type: number, source: string): WebGLShader {
