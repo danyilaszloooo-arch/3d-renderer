@@ -2,6 +2,8 @@ import { Component, effect, ElementRef, inject, viewChild } from '@angular/core'
 import { CanvasService } from '../../services/canvas-service';
 import { InputService } from '../../services/input-service';
 import { TRIANGLE_VERTEX_SHADER, TRIANGLE_FRAGMENT_SHADER } from './triangle-shaders';
+import { MESH_VERTEX_SHADER, MESH_FRAGMENT_SHADER } from './mesh-shaders';
+import { Scenes } from '../../services/scenes';
 
 @Component({
   selector: 'app-canvas-webgl-renderer',
@@ -11,6 +13,7 @@ import { TRIANGLE_VERTEX_SHADER, TRIANGLE_FRAGMENT_SHADER } from './triangle-sha
 export class CanvasWebglRenderer {
   protected canvasService = inject(CanvasService)
   private inputService = inject(InputService)
+  private scenes = inject(Scenes)
 
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvasWebglRenderer')
   private ctx!: WebGL2RenderingContext
@@ -19,8 +22,8 @@ export class CanvasWebglRenderer {
 
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('webgl2')!
-    const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, TRIANGLE_VERTEX_SHADER)
-    const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, TRIANGLE_FRAGMENT_SHADER)
+    const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, MESH_VERTEX_SHADER)
+    const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, MESH_FRAGMENT_SHADER)
     this.program = this.buildProgram(vertexShader, fragmentShader)
     this.buildTriangle()
     this.drawScene()
@@ -90,5 +93,9 @@ export class CanvasWebglRenderer {
     this.ctx.enableVertexAttribArray(0)
     this.ctx.vertexAttribPointer(0, 2, this.ctx.FLOAT, false, 0, 0)
     this.ctx.bindVertexArray(null)
+  }
+
+  private buildMesh(): void {
+    
   }
 }

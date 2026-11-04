@@ -40,13 +40,13 @@ export interface vector2D {
     y: number
 }
 
-export interface mesh3D {
+export interface triangle3D {
     A: vector3D
     B: vector3D
     C: vector3D
 }
 
-export interface mesh2D {
+export interface triangle2D {
     A: vector2D
     B: vector2D
     C: vector2D

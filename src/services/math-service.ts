@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { camera3D, line3D, mesh2D, mesh3D, vector2D, vector3D } from '../interfaces';
+import { camera3D, line3D, triangle2D, triangle3D, vector2D, vector3D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -66,23 +66,23 @@ export class MathService {
     z: near}
   }
 
-  public getOrientation(mesh: mesh2D): number {
-    return (mesh.B.x - mesh.A.x) * (mesh.C.y - mesh.A.y) - (mesh.B.y - mesh.A.y) * (mesh.C.x - mesh.A.x)
+  public getOrientation(triangle: triangle2D): number {
+    return (triangle.B.x - triangle.A.x) * (triangle.C.y - triangle.A.y) - (triangle.B.y - triangle.A.y) * (triangle.C.x - triangle.A.x)
   }
 
-  public countPointsInFrontOfNear(mesh: mesh3D, near: number): number {
+  public countPointsInFrontOfNear(triangle: triangle3D, near: number): number {
     let count: number = 0
-    count += mesh.A.z >= near ? 1 : 0
-    count += mesh.B.z >= near ? 1 : 0
-    count += mesh.C.z >= near ? 1 : 0
+    count += triangle.A.z >= near ? 1 : 0
+    count += triangle.B.z >= near ? 1 : 0
+    count += triangle.C.z >= near ? 1 : 0
     return count
   }
 
-  public clipTriangleToNear(mesh: mesh3D, near: number): mesh3D[] {
+  public clipTriangleToNear(triangle: triangle3D, near: number): triangle3D[] {
     let order: vector3D[][] = [
-      [mesh.A, mesh.B],
-      [mesh.B, mesh.C],
-      [mesh.C, mesh.A]
+      [triangle.A, triangle.B],
+      [triangle.B, triangle.C],
+      [triangle.C, triangle.A]
     ]
     let points: vector3D[] = []
     for (let i = 0; i < order.length; i++) {
@@ -107,7 +107,7 @@ export class MathService {
     return []
   }
 
-  public renderSubTriangles(points: vector3D[]): mesh3D[] {
+  public renderSubTriangles(points: vector3D[]): triangle3D[] {
     const A: vector3D = points[0]
     const B: vector3D = points[1]
     const C: vector3D = points[2]

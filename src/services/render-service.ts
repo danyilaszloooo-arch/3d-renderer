@@ -2,7 +2,7 @@ import { CanvasService } from './canvas-service';
 import { DrawService } from './draw-service';
 import { MathService } from './math-service';
 import { inject, Injectable } from '@angular/core';
-import { line3D, mesh2D, mesh3D, vector2D, vector3D } from '../interfaces';
+import { line3D, triangle2D, triangle3D, vector2D, vector3D } from '../interfaces';
 import { Scenes } from './scenes';
 
 @Injectable({
@@ -47,27 +47,27 @@ export class RenderService {
     })
   }
 
-  public renderMeshes(context: CanvasRenderingContext2D): void {
-    this.scenes.meshes.forEach(mesh => {
-      const relativeMesh: mesh3D = {
-        A: this.mathService.toCameraSpace3D(mesh.A, this.camera()),
-        B: this.mathService.toCameraSpace3D(mesh.B, this.camera()),
-        C: this.mathService.toCameraSpace3D(mesh.C, this.camera())
+  public renderTriangles(context: CanvasRenderingContext2D): void {
+    this.scenes.triangles.forEach(triangle => {
+      const relativeTriangle: triangle3D = {
+        A: this.mathService.toCameraSpace3D(triangle.A, this.camera()),
+        B: this.mathService.toCameraSpace3D(triangle.B, this.camera()),
+        C: this.mathService.toCameraSpace3D(triangle.C, this.camera())
       }
-      const meshesToRender: mesh3D[] = this.mathService.clipTriangleToNear(relativeMesh, this.scenes.camera().nearPoint * this.nearPointMultiplyer)
-      meshesToRender.forEach(mesh => {
-        const projectedMesh: mesh2D = {
-          A: this.mathService.getProjectedPosition2D(mesh.A, this.camera().focalLength),
-          B: this.mathService.getProjectedPosition2D(mesh.B, this.camera().focalLength),
-          C: this.mathService.getProjectedPosition2D(mesh.C, this.camera().focalLength)
+      const trianglesToRender: triangle3D[] = this.mathService.clipTriangleToNear(relativeTriangle, this.scenes.camera().nearPoint * this.nearPointMultiplyer)
+      trianglesToRender.forEach(triangle => {
+        const projectedTriangle: triangle2D = {
+          A: this.mathService.getProjectedPosition2D(triangle.A, this.camera().focalLength),
+          B: this.mathService.getProjectedPosition2D(triangle.B, this.camera().focalLength),
+          C: this.mathService.getProjectedPosition2D(triangle.C, this.camera().focalLength)
         }
-        if (this.mathService.getOrientation(projectedMesh) > 0) {
-          const renderedMesh: mesh2D = {
-            A: this.mathService.getRenderedPosition2D(projectedMesh.A, this.canvasService.canvasCenter),
-            B: this.mathService.getRenderedPosition2D(projectedMesh.B, this.canvasService.canvasCenter),
-            C: this.mathService.getRenderedPosition2D(projectedMesh.C, this.canvasService.canvasCenter)
+        if (this.mathService.getOrientation(projectedTriangle) > 0) {
+          const renderedTriangle: triangle2D = {
+            A: this.mathService.getRenderedPosition2D(projectedTriangle.A, this.canvasService.canvasCenter),
+            B: this.mathService.getRenderedPosition2D(projectedTriangle.B, this.canvasService.canvasCenter),
+            C: this.mathService.getRenderedPosition2D(projectedTriangle.C, this.canvasService.canvasCenter)
           }
-          this.drawService.drawMesh(context, renderedMesh, 1, 'black', 'red')
+          this.drawService.drawTriangle(context, renderedTriangle, 1, 'black', 'red')
         }
       })
     })

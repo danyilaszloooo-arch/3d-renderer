@@ -50,7 +50,7 @@ export class Canvas3DRenderer {
  
   private drawScene(camera: camera3D = this.scenes.camera()): void {
     this.ctx.clearRect(0, 0, this.canvasService.width, this.canvasService.height)
-    this.renderService.renderMeshes(this.ctx)
+    this.renderService.renderTriangles(this.ctx)
     this.renderService.renderPoints(this.ctx)
     this.renderService.renderLine(this.ctx)
   }

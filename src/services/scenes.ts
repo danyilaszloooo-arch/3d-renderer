@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { camera3D, line3D, point3D, vector3D, rotation3D, mesh3D } from '../interfaces';
+import { camera3D, line3D, point3D, vector3D, rotation3D, triangle3D } from '../interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,7 @@ export class Scenes {
   lines: line3D[] = [
   ]
 
-  meshes: mesh3D[] = [
+  triangles: triangle3D[] = [
     { A: {x: -2, y: -2, z: 3}, B: {x:  2, y: -2, z: 3}, C: {x:  2, y:  2, z: 3} },
     { A: {x: -2, y: -2, z: 3}, B: {x:  2, y:  2, z: 3}, C: {x: -2, y:  2, z: 3} },
     { A: {x: -2, y: -2, z: 7}, B: {x: -2, y:  2, z: 7}, C: {x:  2, y:  2, z: 7} },
