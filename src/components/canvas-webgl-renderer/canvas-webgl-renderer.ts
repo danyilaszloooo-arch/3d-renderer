@@ -1,7 +1,6 @@
 import { Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import { CanvasService } from '../../services/canvas-service';
 import { InputService } from '../../services/input-service';
-import { TRIANGLE_VERTEX_SHADER, TRIANGLE_FRAGMENT_SHADER } from './triangle-shaders';
 import { MESH_VERTEX_SHADER, MESH_FRAGMENT_SHADER } from './mesh-shaders';
 import { Scenes } from '../../services/scenes';
 
@@ -18,14 +17,15 @@ export class CanvasWebglRenderer {
   private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvasWebglRenderer')
   private ctx!: WebGL2RenderingContext
   private program!: WebGLProgram
-  private triangleVao!: WebGLVertexArrayObject
+  private meshVao!: WebGLVertexArrayObject
+  private meshVertexCount!: number
 
   ngAfterViewInit() {
     this.ctx = this.canvas().nativeElement.getContext('webgl2')!
     const vertexShader: WebGLShader = this.buildShader(this.ctx.VERTEX_SHADER, MESH_VERTEX_SHADER)
     const fragmentShader: WebGLShader = this.buildShader(this.ctx.FRAGMENT_SHADER, MESH_FRAGMENT_SHADER)
     this.program = this.buildProgram(vertexShader, fragmentShader)
-    this.buildTriangle()
+    this.buildMesh()
     this.drawScene()
   }
 
@@ -52,8 +52,8 @@ export class CanvasWebglRenderer {
     this.ctx.clearColor(0 / 255, 54 / 255, 90 / 255, 1)
     this.ctx.clear(this.ctx.COLOR_BUFFER_BIT)
     this.ctx.useProgram(this.program)
-    this.ctx.bindVertexArray(this.triangleVao)
-    this.ctx.drawArrays(this.ctx.TRIANGLES, 0, 3)
+    this.ctx.bindVertexArray(this.meshVao)
+    this.ctx.drawArrays(this.ctx.TRIANGLES, 0, this.meshVertexCount)
   }
 
   private buildShader(type: number, source: string): WebGLShader {
@@ -77,25 +77,20 @@ export class CanvasWebglRenderer {
     return program
   }
 
-  private buildTriangle(): void {
-    const triangle: Float32Array = new Float32Array(
-      [
-        -0.5, -0.5,
-        0.5, -0.5,
-        0.0,  0.5
-      ]
-    )
-    this.triangleVao = this.ctx.createVertexArray()
-    this.ctx.bindVertexArray(this.triangleVao)
+  private buildMesh(): void {
+    const numbers: number[] = []
+    this.scenes.triangles.forEach(t => { //t => triangle
+      numbers.push(t.A.x, t.A.y, t.A.z, t.B.x, t.B.y, t.B.z, t.C.x, t.C.y, t.C.z)
+    })
+    const mesh: Float32Array = new Float32Array(numbers)
+    this.meshVao = this.ctx.createVertexArray()
+    this.ctx.bindVertexArray(this.meshVao)
     const buffer: WebGLBuffer = this.ctx.createBuffer()
     this.ctx.bindBuffer(this.ctx.ARRAY_BUFFER, buffer)
-    this.ctx.bufferData(this.ctx.ARRAY_BUFFER, triangle, this.ctx.STATIC_DRAW)
+    this.ctx.bufferData(this.ctx.ARRAY_BUFFER, mesh, this.ctx.STATIC_DRAW)
     this.ctx.enableVertexAttribArray(0)
-    this.ctx.vertexAttribPointer(0, 2, this.ctx.FLOAT, false, 0, 0)
+    this.ctx.vertexAttribPointer(0, 3, this.ctx.FLOAT, false, 0, 0)
     this.ctx.bindVertexArray(null)
-  }
-
-  private buildMesh(): void {
-    
+    this.meshVertexCount = this.scenes.triangles.length * 3
   }
 }
